@@ -1,0 +1,5 @@
+{
+  "extends": "@vision_dashboard/tsconfig/nextjs.json",
+  "include": ["src"],
+  "exclude": ["node_modules"]
+}

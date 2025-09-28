@@ -1,0 +1,28 @@
+{
+  "name": "@vision_dashboard/notifications",
+  "version": "0.1.0",
+  "private": true,
+  "main": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./types/*": "./src/types/*.ts"
+  },
+  "scripts": {
+    "clean": "rm -rf .turbo node_modules",
+    "lint": "biome check .",
+    "format": "biome format --write .",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@vision_dashboard/email": "workspace:*",
+    "@vision_dashboard/inbox": "workspace:*",
+    "@vision_dashboard/db": "workspace:*",
+    "nanoid": "^5.1.5",
+    "resend": "^4.6.0",
+    "zod": "3.25.64"
+  },
+  "devDependencies": {
+    "@vision_dashboard/tsconfig": "workspace:*",
+    "typescript": "^5.9.2"
+  }
+}
