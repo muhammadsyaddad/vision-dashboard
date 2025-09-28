@@ -1,7 +1,7 @@
-import { updateSession } from "@vision_dashboard/supabase/middleware";
-import { createClient } from "@vision_dashboard/supabase/server";
+// import { updateSession } from "@vision_dashboard/supabase/middleware";
+// import { createClient } from "@vision_dashboard/supabase/server";
 import { createI18nMiddleware } from "next-international/middleware";
-import { type NextRequest, NextResponse } from "next/server";
+import { type NextRequest } from "next/server";
 
 const I18nMiddleware = createI18nMiddleware({
   locales: ["en"],
@@ -10,28 +10,28 @@ const I18nMiddleware = createI18nMiddleware({
 });
 
 export async function middleware(request: NextRequest) {
-  const response = await updateSession(request, I18nMiddleware(request));
-  const supabase = await createClient();
-  const url = new URL("/", request.url);
-  const nextUrl = request.nextUrl;
+  // const response = await updateSession(request, I18nMiddleware(request));
+  // const supabase = await createClient();
+  // const url = new URL("/", request.url);
+  // const nextUrl = request.nextUrl;
 
-  const pathnameLocale = nextUrl.pathname.split("/", 2)?.[1];
+  // const pathnameLocale = nextUrl.pathname.split("/", 2)?.[1];
 
-  // Remove the locale from the pathname
-  const pathnameWithoutLocale = pathnameLocale
-    ? nextUrl.pathname.slice(pathnameLocale.length + 1)
-    : nextUrl.pathname;
+  // // Remove the locale from the pathname
+  // const pathnameWithoutLocale = pathnameLocale
+  //   ? nextUrl.pathname.slice(pathnameLocale.length + 1)
+  //   : nextUrl.pathname;
 
-  // Create a new URL without the locale in the pathname
-  const newUrl = new URL(pathnameWithoutLocale || "/", request.url);
+  // // Create a new URL without the locale in the pathname
+  // const newUrl = new URL(pathnameWithoutLocale || "/", request.url);
 
-  const encodedSearchParams = `${newUrl?.pathname?.substring(1)}${
-    newUrl.search
-  }`;
+  // const encodedSearchParams = `${newUrl?.pathname?.substring(1)}${
+  //   newUrl.search
+  // }`;
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  // const {
+  //   data: { session },
+  // } = await supabase.auth.getSession();
 
   // 1. Not authenticated
   // if (
@@ -53,42 +53,42 @@ export async function middleware(request: NextRequest) {
   // }
 
   // If authenticated, proceed with other checks
-  if (session) {
-    if (newUrl.pathname !== "/teams/create" && newUrl.pathname !== "/teams") {
-      // Check if the URL contains an invite code
-      const inviteCodeMatch = newUrl.pathname.startsWith("/teams/invite/");
+  // if (session) {
+  //   if (newUrl.pathname !== "/teams/create" && newUrl.pathname !== "/teams") {
+  //     // Check if the URL contains an invite code
+  //     const inviteCodeMatch = newUrl.pathname.startsWith("/teams/invite/");
 
-      if (inviteCodeMatch) {
-        // Allow proceeding to invite page even without setup
-        // Redirecting with the original path including locale if present
-        return NextResponse.redirect(
-          `${url.origin}${request.nextUrl.pathname}`,
-        );
-      }
-    }
+  //     if (inviteCodeMatch) {
+  //       // Allow proceeding to invite page even without setup
+  //       // Redirecting with the original path including locale if present
+  //       return NextResponse.redirect(
+  //         `${url.origin}${request.nextUrl.pathname}`,
+  //       );
+  //     }
+  //   }
 
-    // 3. Check MFA Verification
-    const { data: mfaData } =
-      await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
-    if (
-      mfaData &&
-      mfaData.nextLevel === "aal2" &&
-      mfaData.nextLevel !== mfaData.currentLevel &&
-      newUrl.pathname !== "/mfa/verify"
-    ) {
-      const url = new URL("/mfa/verify", request.url);
+  //   // 3. Check MFA Verification
+  //   const { data: mfaData } =
+  //     await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+  //   if (
+  //     mfaData &&
+  //     mfaData.nextLevel === "aal2" &&
+  //     mfaData.nextLevel !== mfaData.currentLevel &&
+  //     newUrl.pathname !== "/mfa/verify"
+  //   ) {
+  //     const url = new URL("/mfa/verify", request.url);
 
-      if (encodedSearchParams) {
-        url.searchParams.append("return_to", encodedSearchParams);
-      }
+  //     if (encodedSearchParams) {
+  //       url.searchParams.append("return_to", encodedSearchParams);
+  //     }
 
-      // Redirect to MFA verification if needed and not already there
-      return NextResponse.redirect(url);
-    }
-  }
+  //     // Redirect to MFA verification if needed and not already there
+  //     return NextResponse.redirect(url);
+  //   }
+  // }
 
   // If all checks pass, return the original or updated response
-  return response;
+  return I18nMiddleware(request);
 }
 
 export const config = {
