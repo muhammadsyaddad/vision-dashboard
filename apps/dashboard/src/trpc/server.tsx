@@ -1,86 +1,51 @@
-import "server-only";
+// apps/dashboard/src/trpc/server.tsx
+import { ReactNode } from "react";
 
-import type { AppRouter } from "@vision_dashboard/api/trpc/routers/_app";
-import { getCountryCode, getLocale, getTimezone } from "@vision_dashboard/location";
-import { createClient } from "@vision_dashboard/supabase/server";
-import { HydrationBoundary } from "@tanstack/react-query";
-import { dehydrate } from "@tanstack/react-query";
-import { createTRPCClient, httpBatchLink, loggerLink } from "@trpc/client";
-import {
-  type TRPCQueryOptions,
-  createTRPCOptionsProxy,
-} from "@trpc/tanstack-react-query";
-import { cache } from "react";
-import superjson from "superjson";
-import { makeQueryClient } from "./query-client";
-
-// IMPORTANT: Create a stable getter for the query client that
-//            will return the same client during the same request.
-export const getQueryClient = cache(makeQueryClient);
-
-export const trpc = createTRPCOptionsProxy<AppRouter>({
-  queryClient: getQueryClient,
-  client: createTRPCClient({
-    links: [
-      httpBatchLink({
-        url: `${process.env.NEXT_PUBLIC_API_URL}/trpc`,
-        transformer: superjson,
-        async headers() {
-          const supabase = await createClient();
-
-          const {
-            data: { session },
-          } = await supabase.auth.getSession();
-
-          return {
-            Authorization: `Bearer ${session?.access_token}`,
-            "x-user-timezone": await getTimezone(),
-            "x-user-locale": await getLocale(),
-            "x-user-country": await getCountryCode(),
-          };
+function createDummy(path: string[] = []) {
+  return new Proxy(() => {}, {
+    get: (_target, prop) => {
+      if (prop === "__isDummy") return true; // sentinel
+      if (prop === "toJSON") return () => `[trpc:${path.join(".")}]`; // biar aman kalau di-log
+      return createDummy([...path, String(prop)]);
+    },
+    apply: (_target, _thisArg, _args) => {
+      return {
+        queryKey: path,
+        queryFn: async () => {
+          console.log("trpc call →", path.join(".")); // cuma log panggilan, bukan proxy
+          return {};
         },
-      }),
-      loggerLink({
-        enabled: (opts) =>
-          process.env.NODE_ENV === "development" ||
-          (opts.direction === "down" && opts.result instanceof Error),
-      }),
-    ],
-  }),
-});
-
-export function HydrateClient(props: { children: React.ReactNode }) {
-  const queryClient = getQueryClient();
-
-  return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      {props.children}
-    </HydrationBoundary>
-  );
+      };
+    },
+  });
 }
 
-export function prefetch<T extends ReturnType<TRPCQueryOptions<any>>>(
-  queryOptions: T,
-) {
-  const queryClient = getQueryClient();
+export const trpc = new Proxy(
+  {},
+  {
+    get: (_target, prop) => createDummy([String(prop)]),
+  },
+);
 
-  if (queryOptions.queryKey[1]?.type === "infinite") {
-    void queryClient.prefetchInfiniteQuery(queryOptions as any);
-  } else {
-    void queryClient.prefetchQuery(queryOptions);
-  }
+export const batchPrefetch = (_args: any[]) => {};
+
+export function getQueryClient() {
+  return {
+    fetchQuery: async (opts?: any) => {
+      if (opts?.queryKey?.[0] === "user.me") {
+        return {
+          id: "u-123",
+          fullName: "Dummy User",
+          teamId: "team-xyz",
+        };
+      }
+      return {};
+    },
+    prefetchQuery: async () => {},
+    prefetchInfiniteQuery: async () => {},
+  };
 }
 
-export function batchPrefetch<T extends ReturnType<TRPCQueryOptions<any>>>(
-  queryOptionsArray: T[],
-) {
-  const queryClient = getQueryClient();
-
-  for (const queryOptions of queryOptionsArray) {
-    if (queryOptions.queryKey[1]?.type === "infinite") {
-      void queryClient.prefetchInfiniteQuery(queryOptions as any);
-    } else {
-      void queryClient.prefetchQuery(queryOptions);
-    }
-  }
+export function HydrateClient({ children }: { children: ReactNode }) {
+  return <>{children}</>;
 }
