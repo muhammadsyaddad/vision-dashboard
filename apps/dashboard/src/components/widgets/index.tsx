@@ -1,6 +1,5 @@
 "use client";
 
-import { useTRPC } from "@/trpc/client";
 import {
   Carousel,
   CarouselContent,
@@ -8,7 +7,6 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@vision_dashboard/ui/carousel";
-import { useQuery } from "@tanstack/react-query";
 import * as React from "react";
 import { AccountBalance } from "./account-balance";
 import { Assistant } from "./assistant";
@@ -17,29 +15,26 @@ import { Invoice } from "./invoice";
 import { WidgetsNavigation } from "./navigation";
 import { Spending } from "./spending";
 import { Tracker } from "./tracker";
-import { Transactions } from "./transactions/transactions";
 import { Vault } from "./vault";
 
 export function Widgets() {
-  const trpc = useTRPC();
+  // 🚀 Replace fetching with dummy data
+  const accounts = [
+    { id: 1, name: "Checking", balance: 1200.5 },
+    { id: 2, name: "Savings", balance: 5400.75 },
+    { id: 3, name: "Credit Card", balance: -230.1 },
+  ];
 
-  const { data: accounts } = useQuery(
-    trpc.bankAccounts.get.queryOptions({
-      enabled: true,
-    }),
-  );
-
-  // If the user has not connected any accounts, disable the widgets
-  const disabled = !accounts?.length;
+  // Just pretend this is controlled by some feature flag
+  const disabled = false;
 
   const items = [
     <Assistant key="assistant" />,
     <Spending disabled={disabled} key="spending" />,
     <Invoice key="invoice" />,
-    <Transactions disabled={disabled} key="transactions" />,
     <Tracker key="tracker" />,
     <Inbox key="inbox" disabled={disabled} />,
-    <AccountBalance key="account-balance" />,
+    <AccountBalance key="account-balance" accounts={accounts} />,
     <Vault key="vault" />,
   ];
 
@@ -58,16 +53,14 @@ export function Widgets() {
       </div>
 
       <CarouselContent className="-ml-[20px] 2xl:-ml-[40px] flex-col md:flex-row space-y-6 md:space-y-0">
-        {items.map((item, idx) => {
-          return (
-            <CarouselItem
-              className="lg:basis-1/2 xl:basis-1/3 3xl:basis-1/4 pl-[20px] 2xl:pl-[40px]"
-              key={idx.toString()}
-            >
-              {item}
-            </CarouselItem>
-          );
-        })}
+        {items.map((item, idx) => (
+          <CarouselItem
+            className="lg:basis-1/2 xl:basis-1/3 3xl:basis-1/4 pl-[20px] 2xl:pl-[40px]"
+            key={idx.toString()}
+          >
+            {item}
+          </CarouselItem>
+        ))}
       </CarouselContent>
     </Carousel>
   );

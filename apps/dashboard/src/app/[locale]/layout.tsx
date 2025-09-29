@@ -98,8 +98,6 @@ export default async function Layout({
           "whitespace-pre-line overscroll-none antialiased",
         )}
       >
-        <DesktopHeader />
-
         <NuqsAdapter>
           <Providers locale={locale}>{children}</Providers>
           <Toaster />

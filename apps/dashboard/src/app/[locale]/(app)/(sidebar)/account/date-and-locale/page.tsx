@@ -10,13 +10,5 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  return (
-    <div className="space-y-12">
-      <LocaleSettings />
-      <ChangeTimezone />
-      <TimeFormatSettings />
-      <DateFormatSettings />
-      <WeekSettings />
-    </div>
-  );
+  return <div className="space-y-12">ha</div>;
 }

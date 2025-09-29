@@ -1,5 +1,3 @@
-import { CreateTeamForm } from "@/components/forms/create-team-form";
-import { getCountryCode, getCurrency } from "@vision_dashboard/location";
 import { Icons } from "@vision_dashboard/ui/icons";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -9,9 +7,6 @@ export const metadata: Metadata = {
 };
 
 export default function CreateTeam() {
-  const currency = getCurrency();
-  const countryCode = getCountryCode();
-
   return (
     <>
       <header className="w-full absolute left-0 right-0 flex justify-between items-center">
@@ -31,11 +26,6 @@ export default function CreateTeam() {
               personalize your experience in Midday.
             </p>
           </div>
-
-          <CreateTeamForm
-            defaultCurrencyPromise={currency}
-            defaultCountryCodePromise={countryCode}
-          />
         </div>
       </div>
     </>

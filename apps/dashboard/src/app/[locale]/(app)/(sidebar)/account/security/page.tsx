@@ -7,10 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default async function Security() {
-  return (
-    <div className="space-y-12">
-      <MfaSettingsList />
-      <AddNewDeviceModal />
-    </div>
-  );
+  return <div className="space-y-12">ha</div>;
 }

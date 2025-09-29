@@ -1,23 +1,13 @@
 import { SetupForm } from "@/components/setup-form";
-import { getQueryClient, trpc } from "@/trpc/server";
-import { HydrateClient } from "@/trpc/server";
 import { Icons } from "@vision_dashboard/ui/icons";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Setup account | Midday",
 };
 
 export default async function Page() {
-  const queryClient = getQueryClient();
-  const user = await queryClient.fetchQuery(trpc.user.me.queryOptions());
-
-  if (!user?.id) {
-    return redirect("/");
-  }
-
   return (
     <div>
       <div className="absolute left-5 top-4 md:left-10 md:top-10">
@@ -34,10 +24,6 @@ export default async function Page() {
               Add your name and an optional avatar.
             </p>
           </div>
-
-          <HydrateClient>
-            <SetupForm />
-          </HydrateClient>
         </div>
       </div>
     </div>
