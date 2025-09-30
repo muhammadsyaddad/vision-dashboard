@@ -11,7 +11,6 @@ export function DesktopHeader() {
     return null;
   }
 
-  // This is used to make the header draggable on macOS
   return (
     <div
       data-tauri-drag-region

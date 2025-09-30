@@ -15,12 +15,7 @@ const config = {
       },
     ],
   },
-  transpilePackages: [
-    "@vision_dashboard/ui",
-    "@vision_dashboard/tailwind",
-    "@vision_dashboard/invoice",
-    "@vision_dashboard/api",
-  ],
+  transpilePackages: ["@vision_dashboard/ui", "@vision_dashboard/tailwind"],
   serverExternalPackages: ["@react-pdf/renderer", "pdfjs-dist"],
   eslint: {
     ignoreDuringBuilds: true,

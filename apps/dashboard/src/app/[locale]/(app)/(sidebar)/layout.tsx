@@ -1,9 +1,6 @@
 import { Header } from "@/components/header";
-import { GlobalSheets } from "@/components/sheets/global-sheets";
 import { Sidebar } from "@/components/sidebar";
 import { getCountryCode, getCurrency } from "@vision_dashboard/location";
-import { redirect } from "next/navigation";
-import { Suspense } from "react";
 
 export default async function Layout({
   children,
